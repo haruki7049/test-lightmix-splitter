@@ -26,6 +26,10 @@ pub fn build(b: *std.Build) !void {
     });
     l.installWave(b, wave);
 
+    const play = try l.addPlay(b, wave, .{ .optimize = optimize });
+    const play_step = b.step("play", "Play the emitted Wavefile");
+    play_step.dependOn(&play.step);
+
     const mod_tests = b.addTest(.{
         .root_module = mod,
     });
