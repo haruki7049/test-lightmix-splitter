@@ -24,7 +24,10 @@ pub fn gen(comptime T: type, arguments: Arguments(T)) anyerror!lightmix.Wave(T) 
     // Adds each wave to the `var composer`
     var intervals: usize = 0;
     for (arguments.waves) |wave| {
-        try composer.append(.{ .wave = wave, .start_point = intervals });
+        if (wave != null) {
+            try composer.append(.{ .wave = wave.?, .start_point = intervals });
+        }
+
         intervals += interval;
     }
 
@@ -39,7 +42,7 @@ pub fn Arguments(comptime T: type) type {
         amplitude: f32,
         length: usize,
         takes: usize,
-        waves: []const lightmix.Wave(T),
+        waves: []const ?lightmix.Wave(T),
         sample_rate: u32,
         channels: u16,
     };

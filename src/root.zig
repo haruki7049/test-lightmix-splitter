@@ -12,29 +12,35 @@ pub fn gen(allocator: std.mem.Allocator) anyerror!lightmix.Wave(SamplingType) {
     // A number of samples per beat
     const spb = samples_per_beat(120, sample_rate);
 
-    var waves: [8]lightmix.Wave(SamplingType) = undefined;
+    var waves: [16]?lightmix.Wave(SamplingType) = undefined;
     for (waves, 0..) |_, i| {
-        var w: lightmix.Wave(SamplingType) = try lightmix_synths.Basic.Sine.gen(SamplingType, .{
-            .allocator = allocator,
-            .amplitude = 1.0,
-            .frequency = 220.0,
-            .length = 440.0,
-            .sample_rate = sample_rate,
-            .channels = channels,
-        });
-        try w.filter_with(lightmix_filters.volume.DecayArgs, lightmix_filters.volume.decay, .{});
+        if (i % 2 == 0) {
+            var w: lightmix.Wave(SamplingType) = try lightmix_synths.Basic.Sine.gen(SamplingType, .{
+                .allocator = allocator,
+                .amplitude = 1.0,
+                .frequency = 220.0,
+                .length = 440.0,
+                .sample_rate = sample_rate,
+                .channels = channels,
+            });
+            try w.filter_with(lightmix_filters.volume.DecayArgs, lightmix_filters.volume.decay, .{});
 
-        waves[i] = w;
+            waves[i] = w;
+        } else {
+            waves[i] = null;
+        }
     }
     defer for (waves) |wave| {
-        wave.deinit();
+        if (wave != null) {
+            wave.?.deinit();
+        }
     };
 
     const result: lightmix.Wave(f64) = try Splitter.gen(SamplingType, .{
         .allocator = allocator,
         .amplitude = 1.0,
-        .length = spb * 8,
-        .takes = 8,
+        .length = spb * 16,
+        .takes = 16,
         .waves = &waves,
         .sample_rate = sample_rate,
         .channels = channels,
