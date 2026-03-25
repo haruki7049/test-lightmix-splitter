@@ -1,7 +1,7 @@
 .{
     .name = .test_lightmix_splitter,
     .version = "0.0.0",
-    .fingerprint = 0x8b39e45abfda2a4c, // Changing this has security and trust implications.
+    .fingerprint = 0x9d9f1f0d3a678025, // Changing this has security and trust implications.
     .minimum_zig_version = "0.15.2",
 
     .dependencies = .{
