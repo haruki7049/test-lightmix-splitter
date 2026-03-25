@@ -14,7 +14,7 @@ pub fn gen(allocator: std.mem.Allocator) anyerror!lightmix.Wave(SamplingType) {
 
     var waves: [16]?lightmix.Wave(SamplingType) = undefined;
     for (waves, 0..) |_, i| {
-        if (i % 2 == 0) {
+        if (i % 4 == 0 or i % 4 == 1) {
             var w: lightmix.Wave(SamplingType) = try lightmix_synths.Basic.Sine.gen(SamplingType, .{
                 .allocator = allocator,
                 .amplitude = 1.0,
@@ -39,7 +39,7 @@ pub fn gen(allocator: std.mem.Allocator) anyerror!lightmix.Wave(SamplingType) {
     const result: lightmix.Wave(f64) = try Splitter.gen(SamplingType, .{
         .allocator = allocator,
         .amplitude = 1.0,
-        .length = spb * 16,
+        .length = spb * 8,
         .takes = 16,
         .waves = &waves,
         .sample_rate = sample_rate,
