@@ -11,6 +11,16 @@ pub fn gen(comptime T: type, arguments: Arguments(T)) anyerror!lightmix.Wave(T) 
     // Get a interval for each Wave
     const interval: usize = arguments.length / arguments.takes;
 
+    // Creates a soundless Wave to creates a sustain for composed wave data
+    const soundless_data = try arguments.allocator.alloc(T, arguments.length);
+    defer arguments.allocator.free(soundless_data);
+    const soundless = try lightmix.Wave(T).init(soundless_data, arguments.allocator, .{
+        .sample_rate = arguments.sample_rate,
+        .channels = arguments.channels,
+    });
+    defer soundless.deinit();
+    try composer.append(.{ .wave = soundless, .start_point = 0 });
+
     // Adds each wave to the `var composer`
     var intervals: usize = 0;
     for (arguments.waves) |wave| {
@@ -18,6 +28,7 @@ pub fn gen(comptime T: type, arguments: Arguments(T)) anyerror!lightmix.Wave(T) 
         intervals += interval;
     }
 
+    // Finalize
     const result: lightmix.Wave(T) = try composer.finalize(.{});
     return result;
 }
