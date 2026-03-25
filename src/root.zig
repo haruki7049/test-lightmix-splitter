@@ -14,17 +14,20 @@ pub fn gen(allocator: std.mem.Allocator) anyerror!lightmix.Wave(SamplingType) {
 
     var waves: [16]?lightmix.Wave(SamplingType) = undefined;
     for (waves, 0..) |_, i| {
-        const is_timing = i % 4 == 0 or i % 4 == 1 or i % 4 == 3;
+        const is_timing = i % 4 == 0 or i % 4 == 2 or i % 4 == 3;
 
         if (is_timing) {
-            var w: lightmix.Wave(SamplingType) = try lightmix_synths.Basic.Sine.gen(SamplingType, .{
+            var w: lightmix.Wave(SamplingType) = try lightmix_synths.Basic.Triangle.gen(SamplingType, .{
                 .allocator = allocator,
                 .amplitude = 1.0,
                 .frequency = 220.0,
-                .length = 440.0,
+                .length = spb,
                 .sample_rate = sample_rate,
                 .channels = channels,
             });
+            try w.filter_with(lightmix_filters.volume.DecayArgs, lightmix_filters.volume.decay, .{});
+            try w.filter_with(lightmix_filters.volume.DecayArgs, lightmix_filters.volume.decay, .{});
+            try w.filter_with(lightmix_filters.volume.DecayArgs, lightmix_filters.volume.decay, .{});
             try w.filter_with(lightmix_filters.volume.DecayArgs, lightmix_filters.volume.decay, .{});
 
             waves[i] = w;
