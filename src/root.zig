@@ -17,7 +17,7 @@ pub fn gen(allocator: std.mem.Allocator) anyerror!lightmix.Wave(SamplingType) {
         const is_timing = i % 4 == 0 or i % 4 == 2 or i % 4 == 3;
 
         if (is_timing) {
-            var w: lightmix.Wave(SamplingType) = try lightmix_synths.Basic.Triangle.gen(SamplingType, .{
+            var w: lightmix.Wave(SamplingType) = try lightmix_synths.Basic.Sine.gen(SamplingType, .{
                 .allocator = allocator,
                 .amplitude = 1.0,
                 .frequency = 220.0,
